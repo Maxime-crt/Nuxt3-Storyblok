@@ -4,4 +4,8 @@ export default defineNuxtConfig({
         ["@storyblok/nuxt", {accessToken: process.env.STORYBLOK_TOKEN, cacheProvider: 'memory'}],
         '@nuxtjs/tailwindcss',
     ],
+    css: [
+        '~/assets/css/styles.css',
+    ],
+
 })
