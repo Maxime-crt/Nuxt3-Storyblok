@@ -1,7 +1,7 @@
 <template>
     <div class="py-24">
         <h2 class="text-6xl text-gray-800 font-bold text-center mb-12">
-            Articles avec les tags "dépression" et "test"
+            Articles avec les tags "dépression" ou "test"
         </h2>
         <div class="container mx-auto grid md:grid-cols-3 gap-12 my-12 place-items-start">
             <ArticleCard v-for="article in filteredArticles" :key="article.uuid"
