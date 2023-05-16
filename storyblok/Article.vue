@@ -1,6 +1,7 @@
 <template>
   <div v-editable="blok">
-    <img :src="blok.image.filename + '/m/1600x0'" :alt="blok.image.alt" class="mx-auto w-3/4 object-cover" />
+    <img v-if="blok.image" :src="blok.image.filename + '/m/1600x0'" :alt="blok.image.alt"
+      class="mx-auto w-3/4 object-cover" />
     <div class="container mx-auto mb-12">
       <h1 class="text-6xl text-gray-800 font-bold mt-12 mb-4">
         {{ blok.title }}
@@ -13,6 +14,21 @@
       </div>
       <div v-html="resolvedRichText"></div>
       <div v-html="youtubeLinks"></div>
+
+      <!-- Ajout d'une section pour afficher les articles associés -->
+      <h2 class="text-4xl text-gray-800 font-bold mt-12 mb-4">
+        Articles associés
+      </h2>
+      <div
+        class="grid md:grid-cols-3 gap-12 my-12 place-items-start"
+      >
+        <ArticleCard
+          v-for="article in associatedArticles"
+          :key="article.uuid"
+          :article="{ ...article.content, tag_list: article.tag_list }"
+          :slug="article.full_slug"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -39,4 +55,17 @@ function getYoutubeLinks(content) {
 }
 
 const youtubeLinks = getYoutubeLinks(props.blok.content.content);
+
+const associatedArticles = ref([]);
+const storyblokApi = useStoryblokApi();
+onMounted(async () => {
+  const { data } = await storyblokApi.get("cdn/stories", {
+    version: "draft",
+    starts_with: "blog",
+    is_startpage: false,
+  });
+  associatedArticles.value = data.stories.filter((story) =>
+    props.blok.ArticlesAssocies.includes(story.uuid)
+  );
+});
 </script>
