@@ -13,21 +13,14 @@
         Written by: <b>{{ blok.Author }}</b>
       </div>
       <div v-html="resolvedRichText"></div>
-      <div v-html="youtubeLinks"></div>
 
       <!-- Ajout d'une section pour afficher les articles associés -->
       <h2 class="text-4xl text-gray-800 font-bold mt-12 mb-4">
         Articles associés
       </h2>
-      <div
-        class="grid md:grid-cols-3 gap-12 my-12 place-items-start"
-      >
-        <ArticleCard
-          v-for="article in associatedArticles"
-          :key="article.uuid"
-          :article="{ ...article.content, tag_list: article.tag_list }"
-          :slug="article.full_slug"
-        />
+      <div class="grid md:grid-cols-3 gap-12 my-12 place-items-start">
+        <ArticleCard v-for="article in associatedArticles" :key="article.uuid"
+          :article="{ ...article.content, tag_list: article.tag_list }" :slug="article.full_slug" />
       </div>
     </div>
   </div>
@@ -36,25 +29,50 @@
 <script setup>
 const props = defineProps({ blok: Object });
 
-const resolvedRichText = computed(() => renderRichText(props.blok.content));
-
-function getYoutubeLinks(content) {
-  let youtubeLinks = '';
+function renderRichText(content) {
+  let result = '';
   content.forEach(item => {
     if (item.type === 'blok' && item.attrs.body) {
       item.attrs.body.forEach(blokItem => {
         if (blokItem.Video && blokItem.component === 'Youtube') {
           const videoId = blokItem.Video.split('v=')[1];
           const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-          youtubeLinks += `<div class="video-container"><iframe width="560" height="315" src="${embedUrl}" frameborder="0" allowfullscreen></iframe></div>`;
+          result += `<div class="video-container"><iframe width="560" height="315" src="${embedUrl}" frameborder="0" allowfullscreen></iframe></div>`;
         }
       });
+    } else if (item.type === 'doc' && item.content) {
+      result += renderRichText(item.content);
+    } else if (item.type === 'paragraph' && item.content) {
+      let paragraphContent = '';
+      item.content.forEach(textItem => {
+        if (textItem.type === 'text') {
+          let textContent = textItem.text;
+          if (textItem.marks && textItem.marks.length > 0) {
+            textItem.marks.forEach(mark => {
+              if (mark.type === 'text_color') {
+                textContent = `<span style="color: ${mark.attrs.color}">${textContent}</span>`;
+              }
+            });
+          }
+          paragraphContent += textContent;
+        } else if (textItem.type === 'hard_break') {
+          paragraphContent += '<br>';
+        }
+      });
+      result += `<p>${paragraphContent}</p>`;
+    } else if (item.type === 'heading' && item.attrs.level && item.content) {
+      result += `<h${item.attrs.level}>${item.content[0].text}</h${item.attrs.level}>`;
+    } else if (item.type === 'image' && item.attrs.src) {
+      result += `<img src="${item.attrs.src}" alt="${item.attrs.alt || ''}" />`;
     }
   });
-  return youtubeLinks;
+  return result;
 }
 
-const youtubeLinks = getYoutubeLinks(props.blok.content.content);
+
+
+
+const resolvedRichText = computed(() => renderRichText(props.blok.content.content));
 
 const associatedArticles = ref([]);
 const storyblokApi = useStoryblokApi();
