@@ -29,57 +29,113 @@
 <script setup>
 const props = defineProps({ blok: Object });
 
+const renderFunctions = {
+  'blok': renderBlok,
+  'doc': renderDoc,
+  'paragraph': renderParagraph,
+  'heading': renderHeading,
+  'image': renderImage,
+  'bullet_list': renderBulletList,
+  'ordered_list': renderOrderedList
+};
+
 function renderRichText(content) {
   let result = '';
   content.forEach(item => {
-    if (item.type === 'blok' && item.attrs.body) {
-      item.attrs.body.forEach(blokItem => {
-        if (blokItem.Video && blokItem.component === 'Youtube') {
-          const videoId = blokItem.Video.split('v=')[1];
-          const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-          result += `<div class="video-container"><iframe width="560" height="315" src="${embedUrl}" frameborder="0" allowfullscreen></iframe></div>`;
-        }
-      });
-    } else if (item.type === 'doc' && item.content) {
-      result += renderRichText(item.content);
-    } else if (item.type === 'paragraph' && item.content) {
-      let paragraphContent = '';
-      item.content.forEach(textItem => {
-        if (textItem.type === 'text') {
-          let textContent = textItem.text;
-          if (textItem.marks && textItem.marks.length > 0) {
-            textItem.marks.forEach(mark => {
-              if (mark.type === 'text_color') {
-                textContent = `<span style="color: ${mark.attrs.color}">${textContent}</span>`;
-              }
-            });
-          }
-          paragraphContent += textContent;
-        } else if (textItem.type === 'hard_break') {
-          paragraphContent += '<br>';
-        }
-      });
-      result += `<p>${paragraphContent}</p>`;
-    } else if (item.type === 'heading' && item.attrs.level && item.content) {
-      result += `<h${item.attrs.level}>${item.content[0].text}</h${item.attrs.level}>`;
-    } else if (item.type === 'image' && item.attrs.src) {
-      result += `<img src="${item.attrs.src}" alt="${item.attrs.alt || ''}" />`;
-    } else if (item.type === 'bullet_list' && item.content) {
-      let listContent = '';
-      item.content.forEach(listItem => {
-        listContent += `<li>${renderRichText(listItem.content)}</li>`;
-      });
-      result += `<ul>${listContent}</ul>`;
-    } else if (item.type === 'ordered_list' && item.content) {
-      let listContent = '';
-      item.content.forEach(listItem => {
-        listContent += `<li>${renderRichText(listItem.content)}</li>`;
-      });
-      result += `<ol>${listContent}</ol>`;
+    const renderFunction = renderFunctions[item.type];
+    if (renderFunction) {
+      result += renderFunction(item);
     }
   });
   return result;
 }
+
+function renderBlok(item) {
+  let result = '';
+  if (item.attrs.body) {
+    item.attrs.body.forEach(blokItem => {
+      if (blokItem.Video && blokItem.component === 'Youtube') {
+        const videoId = blokItem.Video.split('v=')[1];
+        const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+        result += `<div class="video-container"><iframe width="560" height="315" src="${embedUrl}" frameborder="0" allowfullscreen></iframe></div>`;
+      }
+    });
+  }
+  return result;
+}
+
+function renderDoc(item) {
+  let result = '';
+  if (item.content) {
+    result += renderRichText(item.content);
+  }
+  return result;
+}
+
+function renderParagraph(item) {
+  let result = '';
+  if (item.content) {
+    let paragraphContent = '';
+    item.content.forEach(textItem => {
+      if (textItem.type === 'text') {
+        let textContent = textItem.text;
+        if (textItem.marks && textItem.marks.length > 0) {
+          textItem.marks.forEach(mark => {
+            if (mark.type === 'text_color') {
+              textContent = `<span style="color: ${mark.attrs.color}">${textContent}</span>`;
+            }
+          });
+        }
+        paragraphContent += textContent;
+      } else if (textItem.type === 'hard_break') {
+        paragraphContent += '<br>';
+      }
+    });
+    result += `<p>${paragraphContent}</p>`;
+  }
+  return result;
+}
+
+function renderHeading(item) {
+  let result = '';
+  if (item.attrs.level && item.content) {
+    result += `<h${item.attrs.level}>${item.content[0].text}</h${item.attrs.level}>`;
+  }
+  return result;
+}
+
+function renderImage(item) {
+  let result = '';
+  if (item.attrs.src) {
+    result += `<img src="${item.attrs.src}" alt="${item.attrs.alt || ''}" />`;
+  }
+  return result;
+}
+
+function renderBulletList(item) {
+  let result = '';
+  if (item.content) {
+    let listContent = '';
+    item.content.forEach(listItem => {
+      listContent += `<li>${renderRichText(listItem.content)}</li>`;
+    });
+    result += `<ul>${listContent}</ul>`;
+  }
+  return result;
+}
+
+function renderOrderedList(item) {
+  let result = '';
+  if (item.content) {
+    let listContent = '';
+    item.content.forEach(listItem => {
+      listContent += `<li>${renderRichText(listItem.content)}</li>`;
+    });
+    result += `<ol>${listContent}</ol>`;
+  }
+  return result;
+}
+
 
 
 
