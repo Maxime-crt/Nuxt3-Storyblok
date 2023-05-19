@@ -64,10 +64,23 @@ function renderRichText(content) {
       result += `<h${item.attrs.level}>${item.content[0].text}</h${item.attrs.level}>`;
     } else if (item.type === 'image' && item.attrs.src) {
       result += `<img src="${item.attrs.src}" alt="${item.attrs.alt || ''}" />`;
+    } else if (item.type === 'bullet_list' && item.content) {
+      let listContent = '';
+      item.content.forEach(listItem => {
+        listContent += `<li>${renderRichText(listItem.content)}</li>`;
+      });
+      result += `<ul>${listContent}</ul>`;
+    } else if (item.type === 'ordered_list' && item.content) {
+      let listContent = '';
+      item.content.forEach(listItem => {
+        listContent += `<li>${renderRichText(listItem.content)}</li>`;
+      });
+      result += `<ol>${listContent}</ol>`;
     }
   });
   return result;
 }
+
 
 
 
