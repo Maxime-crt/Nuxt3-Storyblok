@@ -81,8 +81,12 @@ function renderParagraph(item) {
         let textContent = textItem.text;
         if (textItem.marks && textItem.marks.length > 0) {
           textItem.marks.forEach(mark => {
-            if (mark.type === 'text_color') {
+            if (mark.type === 'textStyle') {
               textContent = `<span style="color: ${mark.attrs.color}">${textContent}</span>`;
+            } else if (mark.type === 'bold') {
+              textContent = `<strong>${textContent}</strong>`;
+            } else if (mark.type === 'italic') {
+              textContent = `<em>${textContent}</em>`;
             }
           });
         }
@@ -95,6 +99,9 @@ function renderParagraph(item) {
   }
   return result;
 }
+
+
+
 
 function renderHeading(item) {
   let result = '';
