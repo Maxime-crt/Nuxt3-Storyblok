@@ -109,10 +109,29 @@ function renderParagraph(item) {
 function renderHeading(item) {
   let result = '';
   if (item.attrs.level && item.content) {
-    result += `<h${item.attrs.level}>${item.content[0].text}</h${item.attrs.level}>`;
+    let headingContent = '';
+    item.content.forEach(textItem => {
+      if (textItem.type === 'text') {
+        let textContent = textItem.text;
+        if (textItem.marks && textItem.marks.length > 0) {
+          textItem.marks.forEach(mark => {
+            if (mark.type === 'textStyle') {
+              textContent = `<span style="color: ${mark.attrs.color}">${textContent}</span>`;
+            } else if (mark.type === 'bold') {
+              textContent = `<strong>${textContent}</strong>`;
+            } else if (mark.type === 'italic') {
+              textContent = `<em>${textContent}</em>`;
+            }
+          });
+        }
+        headingContent += textContent;
+      }
+    });
+    result += `<h${item.attrs.level}>${headingContent}</h${item.attrs.level}>`;
   }
   return result;
 }
+
 
 function renderImage(item) {
   let result = '';
