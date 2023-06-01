@@ -41,7 +41,9 @@ const renderFunctions = {
 
 function renderRichText(content) {
   let result = '';
+  console.log('content:', content);
   content.forEach(item => {
+    console.log('item.type:', item.type);
     const renderFunction = renderFunctions[item.type];
     if (renderFunction) {
       result += renderFunction(item);
@@ -49,6 +51,7 @@ function renderRichText(content) {
   });
   return result;
 }
+
 
 function renderBlok(item) {
   let result = '';
@@ -75,32 +78,34 @@ function renderDoc(item) {
 function renderParagraph(item) {
   let result = '';
   if (item.content) {
-    let paragraphContent = '';
-    item.content.forEach(textItem => {
-      if (textItem.type === 'text') {
-        let textContent = textItem.text;
-        if (textItem.marks && textItem.marks.length > 0) {
-          textItem.marks.forEach(mark => {
-            if (mark.type === 'textStyle') {
-              textContent = `<span style="color: ${mark.attrs.color}">${textContent}</span>`;
-            } else if (mark.type === 'bold') {
-              textContent = `<strong>${textContent}</strong>`;
-            } else if (mark.type === 'italic') {
-              textContent = `<em>${textContent}</em>`;
-            }
-          });
+    if (item.content[0].type === 'image') {
+      result += renderImage(item.content[0]);
+    } else {
+      let paragraphContent = '';
+      item.content.forEach(textItem => {
+        if (textItem.type === 'text') {
+          let textContent = textItem.text;
+          if (textItem.marks && textItem.marks.length > 0) {
+            textItem.marks.forEach(mark => {
+              if (mark.type === 'textStyle') {
+                textContent = `<span style="color: ${mark.attrs.color}">${textContent}</span>`;
+              } else if (mark.type === 'bold') {
+                textContent = `<strong>${textContent}</strong>`;
+              } else if (mark.type === 'italic') {
+                textContent = `<em>${textContent}</em>`;
+              }
+            });
+          }
+          paragraphContent += textContent;
+        } else if (textItem.type === 'hard_break') {
+          paragraphContent += '<br>';
         }
-        paragraphContent += textContent;
-      } else if (textItem.type === 'hard_break') {
-        paragraphContent += '<br>';
-      }
-    });
-    result += `<p>${paragraphContent}</p>`;
+      });
+      result += `<p>${paragraphContent}</p>`;
+    }
   }
   return result;
 }
-
-
 
 
 function renderHeading(item) {
@@ -114,6 +119,7 @@ function renderHeading(item) {
 function renderImage(item) {
   let result = '';
   if (item.attrs.src) {
+    console.log('item.attrs.src:', item.attrs.src);
     result += `<img src="${item.attrs.src}" alt="${item.attrs.alt || ''}" />`;
   }
   return result;
@@ -144,12 +150,10 @@ function renderOrderedList(item) {
 }
 
 
-
-
-
-
-const resolvedRichText = computed(() => renderRichText(props.blok.content.content));
-
+const resolvedRichText = computed(() => {
+  console.log('props.blok:', props.blok); // Ajoutez cette ligne
+  return renderRichText(props.blok.content.content);
+});
 const associatedArticles = ref([]);
 const storyblokApi = useStoryblokApi();
 onMounted(async () => {
