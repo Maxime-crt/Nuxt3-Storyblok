@@ -14,7 +14,7 @@
       </div>
       <div v-html="resolvedRichText"></div>
 
-      <!-- Ajout d'une section pour afficher les articles associés -->
+      <!-- Section pour afficher les articles associés -->
       <h2 class="text-4xl text-gray-800 font-bold mt-12 mb-4">
         Articles associés
       </h2>
@@ -51,7 +51,6 @@ function renderRichText(content) {
   });
   return result;
 }
-
 
 function renderBlok(item) {
   let result = '';
@@ -107,7 +106,6 @@ function renderParagraph(item) {
   return result;
 }
 
-
 function renderHeading(item) {
   let result = '';
   if (item.attrs.level && item.content) {
@@ -149,9 +147,8 @@ function renderOrderedList(item) {
   return result;
 }
 
-
 const resolvedRichText = computed(() => {
-  console.log('props.blok:', props.blok); // Ajoutez cette ligne
+  console.log('props.blok:', props.blok);
   return renderRichText(props.blok.content.content);
 });
 const associatedArticles = ref([]);
