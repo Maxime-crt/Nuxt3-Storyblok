@@ -77,34 +77,35 @@ function renderDoc(item) {
 function renderParagraph(item) {
   let result = '';
   if (item.content) {
-    if (item.content[0].type === 'image') {
-      result += renderImage(item.content[0]);
-    } else {
-      let paragraphContent = '';
-      item.content.forEach(textItem => {
-        if (textItem.type === 'text') {
-          let textContent = textItem.text;
-          if (textItem.marks && textItem.marks.length > 0) {
-            textItem.marks.forEach(mark => {
-              if (mark.type === 'textStyle') {
-                textContent = `<span style="color: ${mark.attrs.color}">${textContent}</span>`;
-              } else if (mark.type === 'bold') {
-                textContent = `<strong>${textContent}</strong>`;
-              } else if (mark.type === 'italic') {
-                textContent = `<em>${textContent}</em>`;
-              }
-            });
-          }
-          paragraphContent += textContent;
-        } else if (textItem.type === 'hard_break') {
-          paragraphContent += '<br>';
+    let paragraphContent = '';
+
+    item.content.forEach(textItem => {
+      if (textItem.type === 'text') {
+        let textContent = textItem.text;
+        if (textItem.marks && textItem.marks.length > 0) {
+          textItem.marks.forEach(mark => {
+            if (mark.type === 'textStyle') {
+              textContent = `<span style="color: ${mark.attrs.color}">${textContent}</span>`;
+            } else if (mark.type === 'bold') {
+              textContent = `<strong>${textContent}</strong>`;
+            } else if (mark.type === 'italic') {
+              textContent = `<em>${textContent}</em>`;
+            }
+          });
         }
-      });
-      result += `<p>${paragraphContent}</p>`;
-    }
+        paragraphContent += textContent;
+      } else if (textItem.type === 'image') {
+        paragraphContent += renderImage(textItem);
+      } else if (textItem.type === 'hard_break') {
+        paragraphContent += '<br>';
+      }
+    });
+
+    result += `<p>${paragraphContent}</p>`;
   }
   return result;
 }
+
 
 function renderHeading(item) {
   let result = '';
