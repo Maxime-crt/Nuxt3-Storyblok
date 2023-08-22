@@ -84,7 +84,9 @@ function renderParagraph(item) {
         let textContent = textItem.text;
         if (textItem.marks && textItem.marks.length > 0) {
           textItem.marks.forEach(mark => {
-            if (mark.type === 'textStyle') {
+            if (mark.type === 'link') {
+              textContent = `<a href="${mark.attrs.href}" target="${mark.attrs.target}" linktype="${mark.attrs.linktype}" ${mark.attrs.uuid ? `uuid="${mark.attrs.uuid}"` : ''}>${textContent}</a>`;
+            } else if (mark.type === 'textStyle') {
               textContent = `<span style="color: ${mark.attrs.color}">${textContent}</span>`;
             } else if (mark.type === 'bold') {
               textContent = `<strong>${textContent}</strong>`;
@@ -105,6 +107,7 @@ function renderParagraph(item) {
   }
   return result;
 }
+
 
 
 function renderHeading(item) {
