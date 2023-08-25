@@ -1,5 +1,5 @@
 <template>
-  <StoryblokComponent v-if="story" :blok="story.content" />
+  <StoryblokComponent v-if="story" :blok="story.content" :story="story" />
 </template>
 
 <script setup>
@@ -8,4 +8,6 @@ const story = await useAsyncStoryblok(
   slug && slug.length > 0 ? slug.join("/") : "home",
   { version: "draft" }
 );
+
+console.log("Story object:", story);
 </script>

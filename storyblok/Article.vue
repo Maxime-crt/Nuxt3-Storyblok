@@ -1,7 +1,11 @@
 <template>
   <div v-editable="blok">
-    <img v-if="blok.image" :src="blok.image.filename + '/m/1600x0'" :alt="blok.image.alt"
-      class="mx-auto w-3/4 object-cover" />
+    <img
+      v-if="blok.image"
+      :src="blok.image.filename + '/m/1600x0'"
+      :alt="blok.image.alt"
+      class="mx-auto w-3/4 object-cover"
+    />
     <div class="container mx-auto mb-12">
       <h1 class="text-6xl text-gray-800 font-bold mt-12 mb-4">
         {{ blok.title }}
@@ -10,7 +14,8 @@
         {{ blok.description }}
       </h2>
       <div class="text-gray-600 mb-3">
-        Written by: <b>{{ blok.Author }}</b>
+        Written by:
+        <b>{{ blok.Author }}</b>
       </div>
       <div v-html="resolvedRichText"></div>
 
@@ -19,171 +24,185 @@
         Articles associés
       </h2>
       <div class="grid md:grid-cols-3 gap-12 my-12 place-items-start">
-        <ArticleCard v-for="article in associatedArticles" :key="article.uuid"
-          :article="{ ...article.content, tag_list: article.tag_list }" :slug="article.full_slug" />
+        <ArticleCard
+          v-for="article in associatedArticles"
+          :key="article.uuid"
+          :article="{ ...article.content, tag_list: article.tag_list }"
+          :slug="article.full_slug"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-const props = defineProps({ blok: Object });
+const props = defineProps({ blok: Object, story: Object })
 
 const renderFunctions = {
-  'blok': renderBlok,
-  'doc': renderDoc,
-  'paragraph': renderParagraph,
-  'heading': renderHeading,
-  'image': renderImage,
-  'bullet_list': renderBulletList,
-  'ordered_list': renderOrderedList
-};
+  blok: renderBlok,
+  doc: renderDoc,
+  paragraph: renderParagraph,
+  heading: renderHeading,
+  image: renderImage,
+  bullet_list: renderBulletList,
+  ordered_list: renderOrderedList,
+}
 
 function renderRichText(content) {
-  let result = '';
-  console.log('content:', content);
-  content.forEach(item => {
-    console.log('item.type:', item.type);
-    const renderFunction = renderFunctions[item.type];
+  let result = ''
+  console.log('content:', content)
+  content.forEach((item) => {
+    console.log('item.type:', item.type)
+    const renderFunction = renderFunctions[item.type]
     if (renderFunction) {
-      result += renderFunction(item);
+      result += renderFunction(item)
     }
-  });
-  return result;
+  })
+  return result
 }
 
 function renderBlok(item) {
-  let result = '';
+  let result = ''
   if (item.attrs.body) {
-    item.attrs.body.forEach(blokItem => {
+    item.attrs.body.forEach((blokItem) => {
       if (blokItem.Video && blokItem.component === 'Youtube') {
-        const videoId = blokItem.Video.split('v=')[1];
-        const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-        result += `<div class="video-container"><iframe width="560" height="315" src="${embedUrl}" frameborder="0" allowfullscreen></iframe></div>`;
+        const videoId = blokItem.Video.split('v=')[1]
+        const embedUrl = `https://www.youtube.com/embed/${videoId}`
+        result += `<div class="video-container"><iframe width="560" height="315" src="${embedUrl}" frameborder="0" allowfullscreen></iframe></div>`
       }
-    });
+    })
   }
-  return result;
+  return result
 }
 
 function renderDoc(item) {
-  let result = '';
+  let result = ''
   if (item.content) {
-    result += renderRichText(item.content);
+    result += renderRichText(item.content)
   }
-  return result;
+  return result
 }
 
 function renderParagraph(item) {
-  let result = '';
+  let result = ''
   if (item.content) {
-    let paragraphContent = '';
+    let paragraphContent = ''
 
-    item.content.forEach(textItem => {
+    item.content.forEach((textItem) => {
       if (textItem.type === 'text') {
-        let textContent = textItem.text;
+        let textContent = textItem.text
         if (textItem.marks && textItem.marks.length > 0) {
-          textItem.marks.forEach(mark => {
+          textItem.marks.forEach((mark) => {
             if (mark.type === 'link') {
-              textContent = `<a href="${mark.attrs.href}" target="${mark.attrs.target}" linktype="${mark.attrs.linktype}" ${mark.attrs.uuid ? `uuid="${mark.attrs.uuid}"` : ''}>${textContent}</a>`;
+              textContent = `<a href="${mark.attrs.href}" target="${
+                mark.attrs.target
+              }" linktype="${mark.attrs.linktype}" ${
+                mark.attrs.uuid ? `uuid="${mark.attrs.uuid}"` : ''
+              }>${textContent}</a>`
             } else if (mark.type === 'textStyle') {
-              textContent = `<span style="color: ${mark.attrs.color}">${textContent}</span>`;
+              textContent = `<span style="color: ${mark.attrs.color}">${textContent}</span>`
             } else if (mark.type === 'bold') {
-              textContent = `<strong>${textContent}</strong>`;
+              textContent = `<strong>${textContent}</strong>`
             } else if (mark.type === 'italic') {
-              textContent = `<em>${textContent}</em>`;
+              textContent = `<em>${textContent}</em>`
             }
-          });
+          })
         }
-        paragraphContent += textContent;
+        paragraphContent += textContent
       } else if (textItem.type === 'image') {
-        paragraphContent += renderImage(textItem);
+        paragraphContent += renderImage(textItem)
       } else if (textItem.type === 'hard_break') {
-        paragraphContent += '<br>';
+        paragraphContent += '<br>'
       }
-    });
+    })
 
-    result += `<p>${paragraphContent}</p>`;
+    result += `<p>${paragraphContent}</p>`
   }
-  return result;
+  return result
 }
-
-
 
 function renderHeading(item) {
-  let result = '';
+  let result = ''
   if (item.attrs.level && item.content) {
-    let headingContent = '';
-    item.content.forEach(textItem => {
+    let headingContent = ''
+    item.content.forEach((textItem) => {
       if (textItem.type === 'text') {
-        let textContent = textItem.text;
+        let textContent = textItem.text
         if (textItem.marks && textItem.marks.length > 0) {
-          textItem.marks.forEach(mark => {
+          textItem.marks.forEach((mark) => {
             if (mark.type === 'textStyle') {
-              textContent = `<span style="color: ${mark.attrs.color}">${textContent}</span>`;
+              textContent = `<span style="color: ${mark.attrs.color}">${textContent}</span>`
             } else if (mark.type === 'bold') {
-              textContent = `<strong>${textContent}</strong>`;
+              textContent = `<strong>${textContent}</strong>`
             } else if (mark.type === 'italic') {
-              textContent = `<em>${textContent}</em>`;
+              textContent = `<em>${textContent}</em>`
             }
-          });
+          })
         }
-        headingContent += textContent;
+        headingContent += textContent
       }
-    });
-    result += `<h${item.attrs.level}>${headingContent}</h${item.attrs.level}>`;
+    })
+    result += `<h${item.attrs.level}>${headingContent}</h${item.attrs.level}>`
   }
-  return result;
+  return result
 }
 
-
 function renderImage(item) {
-  let result = '';
+  let result = ''
   if (item.attrs.src) {
-    console.log('item.attrs.src:', item.attrs.src);
-    result += `<img src="${item.attrs.src}" alt="${item.attrs.alt || ''}" />`;
+    console.log('item.attrs.src:', item.attrs.src)
+    result += `<img src="${item.attrs.src}" alt="${item.attrs.alt || ''}" />`
   }
-  return result;
+  return result
 }
 
 function renderBulletList(item) {
-  let result = '';
+  let result = ''
   if (item.content) {
-    let listContent = '';
-    item.content.forEach(listItem => {
-      listContent += `<li>${renderRichText(listItem.content)}</li>`;
-    });
-    result += `<ul>${listContent}</ul>`;
+    let listContent = ''
+    item.content.forEach((listItem) => {
+      listContent += `<li>${renderRichText(listItem.content)}</li>`
+    })
+    result += `<ul>${listContent}</ul>`
   }
-  return result;
+  return result
 }
 
 function renderOrderedList(item) {
-  let result = '';
+  let result = ''
   if (item.content) {
-    let listContent = '';
-    item.content.forEach(listItem => {
-      listContent += `<li>${renderRichText(listItem.content)}</li>`;
-    });
-    result += `<ol>${listContent}</ol>`;
+    let listContent = ''
+    item.content.forEach((listItem) => {
+      listContent += `<li>${renderRichText(listItem.content)}</li>`
+    })
+    result += `<ol>${listContent}</ol>`
   }
-  return result;
+  return result
 }
 
 const resolvedRichText = computed(() => {
-  console.log('props.blok:', props.blok);
-  return renderRichText(props.blok.content.content);
-});
-const associatedArticles = ref([]);
-const storyblokApi = useStoryblokApi();
+  console.log('props.blok:', props.blok)
+  return renderRichText(props.blok.content.content)
+})
+const associatedArticles = ref([])
+const storyblokApi = useStoryblokApi()
 onMounted(async () => {
-  const { data } = await storyblokApi.get("cdn/stories", {
-    version: "draft",
-    starts_with: "blog",
+  const { data } = await storyblokApi.get('cdn/stories', {
+    version: 'draft',
+    starts_with: 'blog',
     is_startpage: false,
-  });
+  })
   associatedArticles.value = data.stories.filter((story) =>
-    props.blok.ArticlesAssocies.includes(story.uuid)
-  );
+    props.blok.ArticlesAssocies.includes(story.uuid),
+  )
+})
+
+// les tags de l'article
+onMounted(() => {
+  if (props.story && props.story.tag_list) { 
+    console.log('Tags de l\'article:', props.story.tag_list);
+  } else {
+    console.log('Pas de tags pour cet article');
+  }
 });
 </script>
