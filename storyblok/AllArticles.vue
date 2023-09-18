@@ -19,95 +19,114 @@
         Tags
       </label>
     </div>
-    <div
-      class="container mx-auto grid md:grid-cols-3 gap-12 my-12 place-items-start"
-    >
-      <ArticleCard
-        v-for="article in filteredArticles"
-        :key="article.uuid"
-        :article="{ ...article.content, tag_list: article.tag_list }"
-        :slug="article.full_slug"
-      />
-    </div>
-    <!-- Nouvelle section pour les articles filtrés par tags -->
-    <div v-if="tags.length > 0" class="mt-12">
-      <h3 class="text-4xl text-gray-800 font-bold text-center mb-8">
-        Articles avec les tags "{{ tags.join('", "') }}"
-      </h3>
+    <div class="flex flex-row flex-wrap justify-center gap-3 rounded mt-6 mb-6">
       <div
-        class="container mx-auto grid md:grid-cols-3 gap-12 my-12 place-items-start"
+        v-for="tag in tagList"
+        class="p-2 rounded-lg bg-gray-100 hover:bg-yellow-200 cursor-pointer"
+        :class="{ 'bg-yellow-200': selectedTag === tag }"
+        @click="selectedTag = selectedTag === tag ? '' : tag"
       >
-        <ArticleCard
-          v-for="article in taggedArticles"
-          :key="article.uuid"
-          :article="{ ...article.content, tag_list: article.tag_list }"
-          :slug="article.full_slug"
-        />
+        <p>{{ tag }}</p>
       </div>
     </div>
+    <div
+    class="container mx-auto grid md:grid-cols-3 gap-12 my-12 place-items-start"
+  >
+    <ArticleCard
+      v-for="article in paginatedArticles"
+      :key="article.uuid"
+      :article="{ ...article.content, tag_list: article.tag_list }"
+      :slug="article.full_slug"
+    />
+  </div>
+  <div class="text-center mt-8">
+    <button 
+      v-if="showLoadMoreButton"
+      @click="loadMoreArticles"
+      class="bg-gray-100 hover:bg-yellow-200  font-bold py-2 px-4 rounded"
+    >
+      Voir plus <i class="fas fa-arrow-down"></i>
+    </button>
+  </div>
   </div>
 </template>
 
 <script setup>
-defineProps({ blok: Object, tags: { type: Array, default: () => [] } });
+defineProps({ blok: Object })
 
-const articles = ref(null);
-const searchTerm = ref("");
-const filterType = ref("author");
-const storyblokApi = useStoryblokApi();
-const { data } = await storyblokApi.get("cdn/stories", {
-  version: "draft",
-  starts_with: "blog",
+const articles = ref(null)
+const searchTerm = ref('')
+const filterType = ref('author')
+const selectedTag = ref('')
+let numberOfArticlesToShow = ref(3);
+const storyblokApi = useStoryblokApi()
+const { data } = await storyblokApi.get('cdn/stories', {
+  version: 'draft',
+  starts_with: 'blog',
   is_startpage: false,
-});
-articles.value = data.stories;
+})
+articles.value = data.stories
+
+const tagList = computed(() => {
+  let tags = []
+  articles.value.forEach((article) => {
+    article.tag_list.forEach((tag) => {
+      if (!tags.includes(tag)) {
+        tags.push(tag)
+      }
+    })
+  })
+  return tags
+})
 
 const filteredArticles = computed(() => {
-  if (!searchTerm.value) return articles.value;
+  if (!searchTerm.value) return articles.value
 
   return articles.value.filter((article) => {
-    const content = article.content;
+    const content = article.content
+    const searchLower = searchTerm.value.toLowerCase()
 
-    if (filterType.value === "author") {
+    if (filterType.value === 'author') {
       return content.Author
-        ? content.Author.toLowerCase().includes(searchTerm.value.toLowerCase())
-        : false;
-    } else if (filterType.value === "tags") {
-      if (!article.tag_list) {
-        console.error("Tags not found for article:", article);
-        return false;
-      }
-
-      const searchLower = searchTerm.value.toLowerCase();
-
-      return article.tag_list.some((tag) => {
-        const tagLower = tag.toLowerCase();
-
-        if (tagLower.includes(searchLower)) {
-          console.log("Matched tag:", tag, "for article:", article);
-          return true;
-        }
-        return false;
-      });
+        ? content.Author.toLowerCase().includes(searchLower)
+        : false
+    } else if (filterType.value === 'tags') {
+      return article.tag_list.some((tag) =>
+        tag.toLowerCase().includes(searchLower),
+      )
     }
 
-    return false;
-  });
-});
+    return false
+  })
+})
 
-// Nouvelle propriété calculée pour filtrer les articles en fonction des tags passés en paramètres
 const taggedArticles = computed(() => {
-  if (tags.length === 0) return [];
+  if (!selectedTag.value) return []
 
   return articles.value.filter((article) => {
-    if (!article.tag_list) {
-      console.error("Tags not found for article:", article);
-      return false;
-    }
+    return article.tag_list.includes(selectedTag.value)
+  })
+})
 
-    return tags.every((tag) =>
-      article.tag_list.map((t) => t.toLowerCase()).includes(tag.toLowerCase())
-    );
-  });
+const finalFilteredArticles = computed(() => {
+  if (selectedTag.value) {
+    return taggedArticles.value
+  }
+  return filteredArticles.value
+})
+
+// Cette fonction retourne les articles à afficher en fonction du nombre défini
+const paginatedArticles = computed(() => {
+  return finalFilteredArticles.value.slice(0, numberOfArticlesToShow.value);
 });
+
+// Cette fonction retourne true ou false en fonction de la nécessité d'afficher le bouton "Voir plus"
+const showLoadMoreButton = computed(() => {
+  return finalFilteredArticles.value.length > numberOfArticlesToShow.value;
+});
+
+// Cette fonction augmente le nombre d'articles à afficher
+const loadMoreArticles = () => {
+  numberOfArticlesToShow.value += 3;
+};
 </script>
