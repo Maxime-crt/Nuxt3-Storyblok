@@ -68,8 +68,8 @@ function renderBlok(item) {
       if (blokItem.Video && blokItem.component === 'Youtube') {
         const videoId = blokItem.Video.split('v=')[1]
         const embedUrl = `https://www.youtube.com/embed/${videoId}`
-        result += `<div class="video-container relative w-full h-0 pb-[56.25%] max-w-screen-md mx-auto lg:max-h-[450px] lg:h-[450px] lg:pb-0">
-            <iframe class="absolute top-0 left-0 w-full h-full" src="${embedUrl}" frameborder="0" allowfullscreen></iframe>
+        result += `<div class="video-container relative w-full pb-[56.25%] max-w-screen-md mx-auto lg:max-h-[450px] lg:h-[450px] lg:pb-0">
+            <iframe class="absolute top-0 left-0 w-full h-full lg:w-[80%] lg:h-[80%] lg:left-[10%] lg:top-[10%]" src="${embedUrl}" frameborder="0" allowfullscreen></iframe>
           </div>`;
       }
     })
