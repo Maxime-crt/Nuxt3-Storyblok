@@ -7,7 +7,7 @@
       <div
         v-for="tag in tagList"
         :key="tag"
-        class="p-2 rounded-lg bg-gray-100 hover:bg-yellow-200 cursor-pointer"
+        class="p-2 rounded-lg bg-gray-100 hover:bg-yellow-200 cursor-pointer select-none"
         :class="{ 'bg-yellow-200': selectedTag === tag }"
         @click="selectedTag = selectedTag === tag ? '' : tag"
       >
