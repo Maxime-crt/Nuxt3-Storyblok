@@ -1,6 +1,6 @@
 <template>
-  <div class="py-24">
-    <h2 class="text-6xl text-gray-800 font-bold text-center mb-12">
+  <div class="py-8">
+    <h2 class="text-3xl text-gray-800 font-bold text-center">
       {{ blok.headline }}
     </h2>
     <div class="flex flex-row flex-wrap justify-center gap-3 rounded mt-6 mb-6">
