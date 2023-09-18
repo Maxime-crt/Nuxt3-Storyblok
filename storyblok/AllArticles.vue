@@ -3,22 +3,6 @@
     <h2 class="text-6xl text-gray-800 font-bold text-center mb-12">
       {{ blok.headline }}
     </h2>
-    <div class="text-center mb-8">
-      <input
-        type="text"
-        v-model="searchTerm"
-        class="border rounded px-4 py-2 mr-4"
-        placeholder="Rechercher un article"
-      />
-      <label>
-        <input type="radio" value="author" v-model="filterType" class="mr-2" />
-        Auteur
-      </label>
-      <label class="ml-4">
-        <input type="radio" value="tags" v-model="filterType" class="mr-2" />
-        Tags
-      </label>
-    </div>
     <div class="flex flex-row flex-wrap justify-center gap-3 rounded mt-6 mb-6">
       <div
         v-for="tag in tagList"
@@ -31,24 +15,24 @@
       </div>
     </div>
     <div
-    class="container mx-auto grid md:grid-cols-3 gap-12 my-12 place-items-start"
-  >
-    <ArticleCard
-      v-for="article in paginatedArticles"
-      :key="article.uuid"
-      :article="{ ...article.content, tag_list: article.tag_list }"
-      :slug="article.full_slug"
-    />
-  </div>
-  <div class="text-center mt-8">
-    <button 
-      v-if="showLoadMoreButton"
-      @click="loadMoreArticles"
-      class="bg-gray-100 hover:bg-yellow-200  font-bold py-2 px-4 rounded"
+      class="container mx-auto grid md:grid-cols-3 gap-12 my-12 place-items-start"
     >
-      Voir plus <i class="fas fa-arrow-down"></i>
-    </button>
-  </div>
+      <ArticleCard
+        v-for="article in paginatedArticles"
+        :key="article.uuid"
+        :article="{ ...article.content, tag_list: article.tag_list }"
+        :slug="article.full_slug"
+      />
+    </div>
+    <div class="text-center mt-8">
+      <button 
+        v-if="showLoadMoreButton"
+        @click="loadMoreArticles"
+        class="bg-gray-100 hover:bg-yellow-200  font-bold py-2 px-4 rounded"
+      >
+        Voir plus <i class="fas fa-arrow-down"></i> <!-- Là faut que tu changes par la librarie que tu souhaites -->
+      </button>
+    </div>
   </div>
 </template>
 
@@ -56,16 +40,16 @@
 defineProps({ blok: Object })
 
 const articles = ref(null)
-const searchTerm = ref('')
-const filterType = ref('author')
 const selectedTag = ref('')
-let numberOfArticlesToShow = ref(3);
+let numberOfArticlesToShow = ref(3)
 const storyblokApi = useStoryblokApi()
+
 const { data } = await storyblokApi.get('cdn/stories', {
   version: 'draft',
   starts_with: 'blog',
   is_startpage: false,
 })
+
 articles.value = data.stories
 
 const tagList = computed(() => {
@@ -80,27 +64,6 @@ const tagList = computed(() => {
   return tags
 })
 
-const filteredArticles = computed(() => {
-  if (!searchTerm.value) return articles.value
-
-  return articles.value.filter((article) => {
-    const content = article.content
-    const searchLower = searchTerm.value.toLowerCase()
-
-    if (filterType.value === 'author') {
-      return content.Author
-        ? content.Author.toLowerCase().includes(searchLower)
-        : false
-    } else if (filterType.value === 'tags') {
-      return article.tag_list.some((tag) =>
-        tag.toLowerCase().includes(searchLower),
-      )
-    }
-
-    return false
-  })
-})
-
 const taggedArticles = computed(() => {
   if (!selectedTag.value) return []
 
@@ -113,21 +76,18 @@ const finalFilteredArticles = computed(() => {
   if (selectedTag.value) {
     return taggedArticles.value
   }
-  return filteredArticles.value
+  return articles.value
 })
 
-// Cette fonction retourne les articles à afficher en fonction du nombre défini
 const paginatedArticles = computed(() => {
-  return finalFilteredArticles.value.slice(0, numberOfArticlesToShow.value);
-});
+  return finalFilteredArticles.value.slice(0, numberOfArticlesToShow.value)
+})
 
-// Cette fonction retourne true ou false en fonction de la nécessité d'afficher le bouton "Voir plus"
 const showLoadMoreButton = computed(() => {
-  return finalFilteredArticles.value.length > numberOfArticlesToShow.value;
-});
+  return finalFilteredArticles.value.length > numberOfArticlesToShow.value
+})
 
-// Cette fonction augmente le nombre d'articles à afficher
 const loadMoreArticles = () => {
-  numberOfArticlesToShow.value += 3;
-};
+  numberOfArticlesToShow.value += 3
+}
 </script>
