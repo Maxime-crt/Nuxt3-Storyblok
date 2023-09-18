@@ -68,7 +68,9 @@ function renderBlok(item) {
       if (blokItem.Video && blokItem.component === 'Youtube') {
         const videoId = blokItem.Video.split('v=')[1]
         const embedUrl = `https://www.youtube.com/embed/${videoId}`
-        result += `<div class="video-container"><iframe width="560" height="315" src="${embedUrl}" frameborder="0" allowfullscreen></iframe></div>`
+        result += `<div class="video-container relative w-full h-0 pb-[56.25%] bg-red-200 max-w-screen-md mx-auto lg:max-h-[450px] lg:h-[450px] lg:pb-0">
+            <iframe class="absolute top-0 left-0 w-full h-full" src="${embedUrl}" frameborder="0" allowfullscreen></iframe>
+          </div>`;
       }
     })
   }
@@ -199,10 +201,10 @@ onMounted(async () => {
 
 // les tags de l'article
 onMounted(() => {
-  if (props.story && props.story.tag_list) { 
-    console.log('Tags de l\'article:', props.story.tag_list);
+  if (props.story && props.story.tag_list) {
+    console.log("Tags de l'article:", props.story.tag_list)
   } else {
-    console.log('Pas de tags pour cet article');
+    console.log('Pas de tags pour cet article')
   }
-});
+})
 </script>
