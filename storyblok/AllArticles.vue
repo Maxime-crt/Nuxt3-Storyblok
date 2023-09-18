@@ -22,6 +22,7 @@
     <div class="flex flex-row flex-wrap justify-center gap-3 rounded mt-6 mb-6">
       <div
         v-for="tag in tagList"
+        :key="tag"
         class="p-2 rounded-lg bg-gray-100 hover:bg-yellow-200 cursor-pointer"
         :class="{ 'bg-yellow-200': selectedTag === tag }"
         @click="selectedTag = selectedTag === tag ? '' : tag"
