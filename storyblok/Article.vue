@@ -69,8 +69,10 @@ function renderBlok(item) {
         const videoId = blokItem.Video.split('v=')[1]
         const embedUrl = `https://www.youtube.com/embed/${videoId}`
         result += `<div class="video-container relative w-full pb-[56.25%] max-w-screen-md mx-auto lg:max-h-[450px] lg:h-[450px] lg:pb-0">
-            <iframe class="absolute top-0 left-0 w-full h-full lg:w-[80%] lg:h-[80%] lg:left-[10%] lg:top-[10%]" src="${embedUrl}" frameborder="0" allowfullscreen></iframe>
+            <iframe class="absolute top-0 left-0 w-full h-full lg:w-full lg:h-full lg:left-0 lg:top-0" src="${embedUrl}" frameborder="0" allowfullscreen></iframe>
           </div>`;
+
+
       }
     })
   }
