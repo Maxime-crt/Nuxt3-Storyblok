@@ -1,36 +1,61 @@
 <template>
-  <div v-editable="blok">
-    <img
-      v-if="blok.image"
-      :src="blok.image.filename + '/m/1600x0'"
-      :alt="blok.image.alt"
-      class="mx-auto w-3/4 object-cover"
-    />
+  <div v-editable="blok" class="container mt-10 max-w-screen-xl mx-auto">
+    <Head>
+      <Title>Cline : {{ blok.title }}</Title>
+      <Meta property="og:title" :content="`${blok.title}`" />
+      <Meta property="og:image" :content="`${blok.image.filename}`" />
+      <Meta property="og:description" :content="`${blok.summary}`" />
+      <Meta name="twitter:description" :content="`${blok.summary}`" />
+      <Meta name="twitter:image" :content="`${blok.image.filename}`" />
+    </Head>
+
+    <div class="relative">
+      <img
+        :src="blok.image.filename + '/m/1600x0'"
+        :alt="blok.image.alt"
+        class="mx-auto object-cover rounded-lg"
+      />
+      <div class="absolute bottom-0 left-0 rounded-lg">
+        <h1 class="p-6 text-5xl md:text-8xl text-white font-bold">
+          {{ blok.title }}
+        </h1>
+      </div>
+    </div>
+
+    <h2
+      class="text-2xl text-gray-700 pb-6 my-10 text-justify border-b-2 border-gray-200"
+    >
+      {{ blok.summary }}
+    </h2>
+
     <div class="container mx-auto mb-12">
-      <h1 class="text-6xl text-gray-800 font-bold mt-12 mb-4">
-        {{ blok.title }}
-      </h1>
-      <h2 class="text-2xl text-gray-500 font-bold mb-4">
-        {{ blok.description }}
-      </h2>
-      <div class="text-gray-600 mb-3">
+      <!-- <div class="text-gray-600 mb-3">
         Written by:
         <b>{{ blok.Author }}</b>
-      </div>
-      <div v-html="resolvedRichText"></div>
+      </div> -->
+      <div v-html="resolvedRichText" class="mb-10 text-justify"></div>
 
-      <!-- Section pour afficher les articles associés -->
-      <h2 class="text-4xl text-gray-800 font-bold mt-12 mb-4">
-        Articles associés
-      </h2>
-      <div class="grid md:grid-cols-3 gap-12 my-12 place-items-start">
-        <ArticleCard
-          v-for="article in associatedArticles"
-          :key="article.uuid"
-          :article="{ ...article.content, tag_list: article.tag_list }"
-          :slug="article.full_slug"
-        />
+      <!-- Ajout d'une section pour afficher les articles associés -->
+      <div v-if="associatedArticles.length > 0">
+        <p class="text-3xl font-medium">
+          Ces articles pourraient vous intéresser :
+        </p>
+        <div class="mt-5 grid md:grid-cols-2 gap-10 place-items-start">
+          <ArticleCard
+            v-for="article in associatedArticles"
+            :key="article.uuid"
+            :article="{ ...article.content, tag_list: article.tag_list }"
+            :slug="article.full_slug"
+          />
+        </div>
       </div>
+
+      <!-- Ajout d'une section pour afficher les études associées -->
+      <!-- <div v-if="studies.length > 0" class="col-span-3 md:col-span-1">
+        <div class="rounded-box mb-10">
+          <BaseStudiesbyarticle :studies="studies" />
+        </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -153,10 +178,11 @@ function renderImage(item) {
   let result = ''
   if (item.attrs.src) {
     console.log('item.attrs.src:', item.attrs.src)
-    result += `<img src="${item.attrs.src}" alt="${item.attrs.alt || ''}" />`
+    result += `<img src="${item.attrs.src}" alt="${item.attrs.alt || ''}" style="max-width: 400px; max-height: 300px;" class="object-cover rounded-lg w-full h-auto md:w-1/2 lg:w-1/3" />`
   }
   return result
 }
+
 
 function renderBulletList(item) {
   let result = ''
