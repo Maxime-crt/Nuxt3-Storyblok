@@ -10,6 +10,7 @@
     "proxy": "mkcert -install && mkcert localhost && local-ssl-proxy --source 3010 --target 3000 --cert localhost.pem --key localhost-key.pem"
   },
   "devDependencies": {
+    "@nuxt/devtools": "^0.8.4",
     "@nuxtjs/tailwindcss": "^6.6.5",
     "dotenv": "^16.0.3",
     "nuxt": "^3.3.3"
