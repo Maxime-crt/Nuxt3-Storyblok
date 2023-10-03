@@ -75,12 +75,17 @@ const renderFunctions = {
 
 function renderRichText(content) {
   let result = ''
-  console.log('content:', content)
-  content.forEach((item) => {
-    console.log('item.type:', item.type)
+  let previousWasHeading = false // Nouvelle variable pour garder une trace du type précédent
+
+  content.forEach((item, index) => {
     const renderFunction = renderFunctions[item.type]
     if (renderFunction) {
+      if (previousWasHeading && item.type === 'heading') {
+        // Si le type précédent était un 'heading' et que le type actuel est également un 'heading', insérez un <br>
+        result += '<br>'
+      }
       result += renderFunction(item)
+      previousWasHeading = item.type === 'heading' // Mettez à jour la variable pour le prochain tour de boucle
     }
   })
   return result
@@ -178,11 +183,12 @@ function renderImage(item) {
   let result = ''
   if (item.attrs.src) {
     console.log('item.attrs.src:', item.attrs.src)
-    result += `<img src="${item.attrs.src}" alt="${item.attrs.alt || ''}" style="max-width: 400px; max-height: 300px;" class="object-cover rounded-lg w-full h-auto md:w-1/2 lg:w-1/3" />`
+    result += `<img src="${item.attrs.src}" alt="${
+      item.attrs.alt || ''
+    }" style="max-width: 400px; max-height: 300px;" class="object-cover rounded-lg w-full h-auto md:w-1/2 lg:w-1/3" />`
   }
   return result
 }
-
 
 function renderBulletList(item) {
   let result = ''
