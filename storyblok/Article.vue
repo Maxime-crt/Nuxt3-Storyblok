@@ -22,40 +22,36 @@
       </div>
     </div>
 
-    <h2
-      class="text-2xl text-gray-700 pb-6 my-10 text-justify border-b-2 border-gray-200"
-    >
-      {{ blok.summary }}
-    </h2>
+    <div class="grid grid-cols-3 mx-auto gap-6">
+      <div class="col-span-3 md:col-span-2 mx-auto">
+        <h2
+          class="text-2xl text-gray-700 pb-6 my-10 text-justify border-b-2 border-gray-200"
+        >
+          {{ blok.summary }}
+        </h2>
+        <div v-html="resolvedRichText" class="mb-10 text-justify"></div>
 
-    <div class="container mx-auto mb-12">
-      <!-- <div class="text-gray-600 mb-3">
-        Written by:
-        <b>{{ blok.Author }}</b>
-      </div> -->
-      <div v-html="resolvedRichText" class="mb-10 text-justify"></div>
-
-      <!-- Ajout d'une section pour afficher les articles associés -->
-      <div v-if="associatedArticles.length > 0">
-        <p class="text-3xl font-medium">
-          Ces articles pourraient vous intéresser :
-        </p>
-        <div class="mt-5 grid md:grid-cols-2 gap-10 place-items-start">
-          <ArticleCard
-            v-for="article in associatedArticles"
-            :key="article.uuid"
-            :article="{ ...article.content, tag_list: article.tag_list }"
-            :slug="article.full_slug"
-          />
+        <div v-if="associatedArticles.length > 0">
+          <p class="text-3xl font-medium">
+            Ces articles pourraient vous intéresser :
+          </p>
+          <div class="mt-5 grid md:grid-cols-2 gap-10 place-items-start">
+            <ArticleCard
+              v-for="article in associatedArticles"
+              :key="article.uuid"
+              :article="{ ...article.content, tag_list: article.tag_list }"
+              :slug="article.full_slug"
+            />
+          </div>
         </div>
       </div>
 
-      <!-- Ajout d'une section pour afficher les études associées -->
-      <!-- <div v-if="studies.length > 0" class="col-span-3 md:col-span-1">
-        <div class="rounded-box mb-10">
+      <div class="col-span-3 md:col-span-1">
+        <!-- Contenu pour le 1/3 restant -->
+        <!-- <div v-if="studies.length > 0" class="rounded-box mb-10">
           <BaseStudiesbyarticle :studies="studies" />
-        </div>
-      </div> -->
+        </div> -->
+      </div>
     </div>
   </div>
 </template>
