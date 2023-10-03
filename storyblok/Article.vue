@@ -85,7 +85,7 @@ function renderRichText(content) {
         result += '<br>'
       }
       result += renderFunction(item)
-      previousWasHeading = item.type === 'heading' // Mettez à jour la variable pour le prochain tour de boucle
+      previousWasHeading = item.type === 'heading' // Met à jour la variable pour le prochain tour de boucle
     }
   })
   return result
