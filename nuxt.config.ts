@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
     devtools: { enabled: true },
     modules: [
-        ["@storyblok/nuxt", {accessToken: process.env.STORYBLOK_TOKEN, cacheProvider: 'memory'}],
+        ["@storyblok/nuxt", {accessToken: process.env.NUXT_STORYBLOK_TOKEN, cacheProvider: 'memory'}],
         '@nuxtjs/tailwindcss',
     ],
     css: [
