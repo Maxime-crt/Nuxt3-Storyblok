@@ -6,7 +6,7 @@
 const { slug } = useRoute().params;
 const story = await useAsyncStoryblok(
   slug && slug.length > 0 ? slug.join("/") : "home",
-  { version: "published" }
+  { version: "draft" }
 );
 
 console.log("Story object:", story);
