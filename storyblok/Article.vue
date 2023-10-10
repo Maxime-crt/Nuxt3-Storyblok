@@ -179,12 +179,21 @@ function renderImage(item) {
   let result = ''
   if (item.attrs.src) {
     console.log('item.attrs.src:', item.attrs.src)
+    const linkMark = item.marks && item.marks.find(mark => mark.type === 'link');
+    if (linkMark) {
+      const { href, target } = linkMark.attrs;
+      result += `<a href="${href}" target="${target}">`;
+    }
     result += `<img src="${item.attrs.src}" alt="${
       item.attrs.alt || ''
     }" style="max-width: 400px; max-height: 300px;" class="object-cover rounded-lg w-full h-auto md:w-1/2 lg:w-1/3" />`
+    if (linkMark) {
+      result += `</a>`
+    }
   }
   return result
 }
+
 
 function renderBulletList(item) {
   let result = ''
