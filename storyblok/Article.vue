@@ -71,14 +71,14 @@ const renderFunctions = {
 }
 
 function renderRichText(content) {
-  let result = '';
+  let result = ''
   content.forEach((item, index) => {
-    const renderFunction = renderFunctions[item.type];
+    const renderFunction = renderFunctions[item.type]
     if (renderFunction) {
-      result += renderFunction(item);
+      result += renderFunction(item)
     }
-  });
-  return result;
+  })
+  return result
 }
 
 function renderBlok(item) {
@@ -143,49 +143,50 @@ function renderParagraph(item) {
   return result
 }
 
-let previousWasHeading = false;
+let previousWasHeading = false
 
 function renderHeading(item) {
-  let result = '';
+  let result = ''
   if (item.attrs.level && item.content) {
-    let headingContent = '';
+    let headingContent = ''
     item.content.forEach((textItem) => {
       if (textItem.type === 'text') {
-        let textContent = textItem.text;
+        let textContent = textItem.text
         if (textItem.marks && textItem.marks.length > 0) {
           textItem.marks.forEach((mark) => {
             if (mark.type === 'textStyle') {
-              textContent = `<span style="color: ${mark.attrs.color}">${textContent}</span>`;
+              textContent = `<span style="color: ${mark.attrs.color}">${textContent}</span>`
             } else if (mark.type === 'bold') {
-              textContent = `<strong>${textContent}</strong>`;
+              textContent = `<strong>${textContent}</strong>`
             } else if (mark.type === 'italic') {
-              textContent = `<em>${textContent}</em>`;
+              textContent = `<em>${textContent}</em>`
             }
-          });
+          })
         }
-        headingContent += textContent;
+        headingContent += textContent
       }
-    });
+    })
     if (previousWasHeading) {
       // Si le titre précédent était un 'heading', insérez un <br>
-      result += '<br>';
+      result += '<br>'
     }
-    result += `<h${item.attrs.level}>${headingContent}</h${item.attrs.level}>`;
-    previousWasHeading = true;  // Met à jour la variable pour le prochain tour de boucle
+    result += `<h${item.attrs.level}>${headingContent}</h${item.attrs.level}>`
+    previousWasHeading = true // Met à jour la variable pour le prochain tour de boucle
   } else {
-    previousWasHeading = false; // Reset la variable si l'item actuel n'est pas un 'heading'
+    previousWasHeading = false // Reset la variable si l'item actuel n'est pas un 'heading'
   }
-  return result;
+  return result
 }
 
 function renderImage(item) {
   let result = ''
   if (item.attrs.src) {
     console.log('item.attrs.src:', item.attrs.src)
-    const linkMark = item.marks && item.marks.find(mark => mark.type === 'link');
+    const linkMark =
+      item.marks && item.marks.find((mark) => mark.type === 'link')
     if (linkMark) {
-      const { href, target } = linkMark.attrs;
-      result += `<a href="${href}" target="${target}">`;
+      const { href, target } = linkMark.attrs
+      result += `<a href="${href}" target="${target}">`
     }
     result += `<img src="${item.attrs.src}" alt="${
       item.attrs.alt || ''
@@ -196,7 +197,6 @@ function renderImage(item) {
   }
   return result
 }
-
 
 function renderBulletList(item) {
   let result = ''
@@ -223,25 +223,22 @@ function renderOrderedList(item) {
 }
 
 function renderQuote(item) {
-  let result = '';
+  let result = ''
   if (item.content) {
-    let quoteContent = '';
+    let quoteContent = ''
     item.content.forEach((paragraph) => {
       if (paragraph.type === 'paragraph' && paragraph.content) {
         paragraph.content.forEach((textItem) => {
           if (textItem.type === 'text') {
-            quoteContent += textItem.text;
+            quoteContent += textItem.text
           }
-        });
+        })
       }
-    });
-    result += `<blockquote>${quoteContent}</blockquote>`;
+    })
+    result += `<blockquote>${quoteContent}</blockquote>`
   }
-  return result;
+  return result
 }
-
-
-
 
 const resolvedRichText = computed(() => {
   console.log('props.blok:', props.blok)
