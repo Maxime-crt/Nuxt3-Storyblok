@@ -67,6 +67,7 @@ const renderFunctions = {
   image: renderImage,
   bullet_list: renderBulletList,
   ordered_list: renderOrderedList,
+  blockquote: renderQuote,
 }
 
 function renderRichText(content) {
@@ -218,6 +219,27 @@ function renderOrderedList(item) {
   }
   return result
 }
+
+function renderQuote(item) {
+  let result = '';
+  if (item.content) {
+    let quoteContent = '';
+    item.content.forEach((paragraph) => {
+      if (paragraph.type === 'paragraph' && paragraph.content) {
+        paragraph.content.forEach((textItem) => {
+          if (textItem.type === 'text') {
+            quoteContent += textItem.text;
+          }
+        });
+      }
+    });
+    result += `<blockquote>${quoteContent}</blockquote>`;
+  }
+  return result;
+}
+
+
+
 
 const resolvedRichText = computed(() => {
   console.log('props.blok:', props.blok)
