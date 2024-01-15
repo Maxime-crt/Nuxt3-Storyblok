@@ -118,7 +118,9 @@ function renderParagraph(item) {
             if (mark.type === 'link') {
               textContent = `<a href="${mark.attrs.href}" target="${
                 mark.attrs.target
-              }" linktype="${mark.attrs.linktype}" ${
+              }" linktype="${
+                mark.attrs.linktype
+              }" class="text-blue-600 underline" ${
                 mark.attrs.uuid ? `uuid="${mark.attrs.uuid}"` : ''
               }>${textContent}</a>`
             } else if (mark.type === 'textStyle') {
