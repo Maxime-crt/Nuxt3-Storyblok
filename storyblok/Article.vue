@@ -15,7 +15,8 @@
         :alt="blok.image.alt"
         class="mx-auto object-cover rounded-lg"
       />
-      <div class="absolute bottom-0 left-0 rounded-lg">
+      <!-- Ajout d'un gradient sur le titre pour améliorer la visibilité sur des images claires -->
+      <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent rounded-b-lg">
         <h1 class="p-6 text-5xl md:text-8xl text-white font-bold">
           {{ blok.title }}
         </h1>
@@ -48,9 +49,6 @@
 
       <div class="col-span-3 md:col-span-1">
         <!-- Contenu pour le 1/3 restant -->
-        <!-- <div v-if="studies.length > 0" class="rounded-box mb-10">
-          <BaseStudiesbyarticle :studies="studies" />
-        </div> -->
       </div>
     </div>
   </div>
