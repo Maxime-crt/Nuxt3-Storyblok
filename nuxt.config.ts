@@ -10,17 +10,11 @@ export default defineNuxtConfig({
         '~/assets/css/styles.css',
     ],
     i18n: {
-       locales: [
-            {
-                code: 'fr',
-                name: 'Français'
-            },
-            {
-                code: 'en',
-                name: 'English'
-            },
+        locales: [
+            { code: 'fr', name: 'Français' },
+            { code: 'en-us', name: 'English' },
         ],
         defaultLocale: 'fr',
-        strategy: 'prefix_expect_default',
+        strategy: 'prefix_except_default',
     },
 })
